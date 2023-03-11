@@ -2,16 +2,21 @@ import win32print
 import win32api
 import pywintypes
 import sys
+import logging.config
+
+logging.config.fileConfig('loging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 
-def print_file(input_pdf):
+def print_file(input_file: str) -> bool:
     """Print file on default system printer"""
     name: str = win32print.GetDefaultPrinter()
     try:
-        win32api.ShellExecute(0, "print", f'{input_pdf}', None, ".", 0)
+        win32api.ShellExecute(0, "print", f'{input_file}', None, ".", 0)
         return True
-    except pywintypes.error:
-        print("COM Error")
+    except pywintypes.error as e:
+        logger.warning(f'Печать файла {input_file} не удалась')
+        logger.exception(e)
         return False
 
 

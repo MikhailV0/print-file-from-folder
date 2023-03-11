@@ -1,6 +1,7 @@
 *.crt
 *.key
 *.rsc
+test*
 Dockerfile
 docker-compose.yml
 # ---> Python

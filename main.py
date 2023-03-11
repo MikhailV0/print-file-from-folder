@@ -7,5 +7,5 @@ def main():
 
 
 if __name__ == "__main__":
-    PATH: str = "Z:\\test"
+    PATH: str = "M:\\test"
     main()
