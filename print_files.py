@@ -1,4 +1,3 @@
-import win32print
 import win32api
 import pywintypes
 import sys
@@ -10,12 +9,11 @@ logger = logging.getLogger(__name__)
 
 def print_file(input_file: str) -> bool:
     """Print file on default system printer"""
-    name: str = win32print.GetDefaultPrinter()
     try:
         win32api.ShellExecute(0, "print", f'{input_file}', None, ".", 0)
         return True
     except pywintypes.error as e:
-        logger.warning(f'Печать файла {input_file} не удалась')
+        logger.warning(f'Printing file {input_file} failed')
         logger.exception(e)
         return False
 
