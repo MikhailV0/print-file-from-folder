@@ -1,6 +1,10 @@
+"""This module monitors a folder and performs actions"""
+
+
 import os.path
 from print_files import print_file
 from backup_files import backup_file
+from load_config import load_config
 import sys
 import time
 from watchdog.observers import Observer
@@ -13,16 +17,15 @@ logger = logging.getLogger(__name__)
 
 class MonitorFolder(FileSystemEventHandler):
     def on_created(self, event):
+        #get filename and file_extension to diff variable
         filename, file_extension = os.path.splitext(event.src_path)
-        print(f'{filename}, {file_extension}')
-        if file_extension != '.part':
-            print('OK')
+        if file_extension != '.part' and file_extension.lstrip('.') in (load_config('file_extensions')).split(','):
             file_handler(event.src_path)
-
     def on_moved(self, event):
-        print(event.dest_path)
-        #Linux when copy to smb create temp *.part then rename file
-        file_handler(event.dest_path)
+        # Linux when copy to smb create temp *.part then rename file
+        filename, file_extension = os.path.splitext(event.dest_path)
+        if file_extension in (load_config('file_extensions')).split(','):
+            file_handler(event.dest_path)
 
 
 def file_handler(file_path: str) -> None:
@@ -30,16 +33,17 @@ def file_handler(file_path: str) -> None:
         # timeout for smb share folders //test mode//
         time.sleep(5)
         if print_file(file_path):
-            logger.info(f'Файл {file_path} наверное напечатан')
+            logger.info(f'File {file_path} has been sent for printing')
             time.sleep(15)
             if backup_file(file_path):
-                logger.info(f'Файл {file_path} наверное перемещен')
+                logger.info(f'File {file_path} has been moved')
         else:
-            logger.warning(f'Что то пошло не так с файлом {file_path}')
+            logger.warning(f'Something went wrong with the file {file_path}')
 
 
 def monitor_folder(path: str):
     """Monitoring new files in path, and print it"""
+    logger.info('monitoring started')
     event_handler = MonitorFolder()
     observer = Observer()
     observer.schedule(event_handler, path, recursive=False)

@@ -1,4 +1,5 @@
 {
-  "target_folder": "<path_to_folder>",
-  "printer_name": "<printer_name>"
+  "target_folder": "M:\\test",
+  "printer_name": "Default",
+  "file_extensions": "docx,pdf"
 }
