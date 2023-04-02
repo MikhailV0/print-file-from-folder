@@ -24,7 +24,7 @@ class MonitorFolder(FileSystemEventHandler):
     def on_moved(self, event):
         # Linux when copy to smb create temp *.part then rename file
         filename, file_extension = os.path.splitext(event.dest_path)
-        if file_extension in (load_config('file_extensions')).split(','):
+        if file_extension.lstrip('.') in (load_config('file_extensions')).split(','):
             file_handler(event.dest_path)
 
 
